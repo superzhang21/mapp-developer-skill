@@ -1,0 +1,19 @@
+{
+  "branch": "master",
+  "checkedAt": "2026-11-03T11:33:14+00:00",
+  "files": {
+    "README.md": "9a1aa57ab45d26367e4645d28de5655ba2d3078fa63e6f235fa3ffc262922841",
+    "docs/developer-guide.md": "29cfd946ae89054af407d8b6187059e4d93b08af2d0cdb410f3a940221b740b9",
+    "docs/sdk-network.md": "f658bdfb6ff1265a7f6575db76aec02548241fc0c983944cde36e35c73141f34",
+    "docs/server-auth.md": "6a378043a9a6441c6b975d691cc290a27725b12d582ea7b9e1670963a6807bba",
+    "docs/submission-review.md": "84aeb3c0d2ac585f2f0714bbf6098254e779b56722e5b6da86f97e3c5adb67e5",
+    "sdk/README.md": "b0cddb38b9201f1d9e3595110d7db1225e545ec6824f79bac731224edb442e4a",
+    "sdk/index.d.ts": "9573ae17c68217773682d9bcbbb8cb25eab40d52750b9bf89259f44094bf6dca",
+    "sdk/pack.d.ts": "749094131a05968fc95262522c9753687d6736c9e046d5d1f8c8e9363d6962d9",
+    "sdk/package.json": "d72dcce6db1c46a073e675b14e9803b8d661d206cf7d6b846a33334aff1622c6",
+    "sdk/server.d.ts": "afe1aebf45b18bc55d78b04bfbaa895b57ca08fba25b3435608505f2ce664a83"
+  },
+  "headCommit": "",
+  "headDate": "",
+  "repo": "linux-do/mapp-developer-guide"
+}

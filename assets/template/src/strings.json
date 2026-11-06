@@ -1,0 +1,12 @@
+{
+  "zh_CN": {
+    "title": "微应用",
+    "guest": "访客",
+    "apiError": "调用失败（{code}），功能已降级"
+  },
+  "en": {
+    "title": "Mini App",
+    "guest": "Guest",
+    "apiError": "Call failed ({code}); feature degraded"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "format": 1,
+  "id": "00000000-0000-7000-8000-000000000000",
+  "name": "微应用",
+  "version": "1.0.0",
+  "entry": "index.html",
+  "script": "app.js",
+  "style": "app.css",
+  "permissions": ["user.read", "theme.read", "storage.read", "storage.write"],
+  "media": {}
+}

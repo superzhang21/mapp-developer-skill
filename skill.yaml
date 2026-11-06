@@ -1,0 +1,5 @@
+name: mapp-developer
+title: Discourse Mini App Developer
+description: Build, debug and publish Discourse mini apps (社区微应用 / 微程序) for LinuxDo-style communities. Use when creating or modifying a mini app, editing manifest.json, wiring the @discourse-mini-app/sdk, declaring permissions/endpoints/websockets, packaging app.zip, or preparing a sandbox build for review. Auto-evolves its limits, permissions and MIME rules from the upstream linux-do/mapp-developer-guide repository via scripts/evolve.py, and validates the packaged ZIP itself via scripts/check_zip.mjs before upload.
+category: Creation
+include_in_prompt: true
