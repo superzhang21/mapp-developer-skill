@@ -8,13 +8,11 @@ allowed-tools:
 
 # Discourse Mini App Developer
 
-Build mini apps for a Discourse-based community: a static bundle (HTML/CSS/JS plus
-declared assets) that runs inside the forum's mini-app frame, talks to the platform
-through `@discourse-mini-app/sdk`, and is published by uploading a generated `app.zip`.
+Build Discourse mini apps: a static bundle running inside the forum's mini-app
+frame, using `@discourse-mini-app/sdk`, published as `app.zip`.
 
-The upstream specification lives at `github.com/linux-do/mapp-developer-guide` and
-**changes without notice**. Every rule below was extracted from it at a known commit;
-treat the reference files as a cache, not as truth.
+Rules come from `github.com/linux-do/mapp-developer-guide`. The guide changes;
+treat the reference files as a cache and re-check upstream before relying on a limit.
 
 ## When to use
 
@@ -26,26 +24,21 @@ treat the reference files as a cache, not as truth.
 - Reviewing an app against the platform's submission rules
 - Checking whether this skill is still current with the upstream guide
 
-## The one rule that matters first
+## Before you start
 
-**Before touching a manifest, running a build, or answering a question that depends on
-a platform limit, run the upstream freshness check.** Platform limits change silently
-(64 KiB manifest cap, 16 endpoint cap, 32 MiB archive, permission names), and a stale
-answer here produces an app that is rejected at upload for no visible reason.
+Run the upstream check before editing a manifest, building, or answering anything
+that depends on a platform limit:
 
 ```bash
 python3 scripts/evolve.py --evolve
 ```
 
-This is the entry point: it runs the upstream check, and if the guide moved,
-it pulls the new documents and automatically evolves the machine-readable
-rules (see below). It exits non-zero when the check itself fails or when
-an automatic update fails selftest and is rolled back.
-`sync_upstream.py --check` alone is the lower-level check; use it when you
-only want to know whether the guide moved, without changing anything.
-See [Upstream sync](#upstream-sync-the-skill-updates-itself) for the full protocol.
+It pulls upstream changes and updates the machine-readable rules. Non-zero means
+the check failed or an update was rolled back — do not guess limits in that case.
+For a read-only check use `sync_upstream.py --check`.
+See [Upstream sync](#upstream-sync-the-skill-updates-itself).
 
-Read the reference files only after the check passes:
+Read the reference files after the check passes:
 
 | File | Read it when |
 | --- | --- |
@@ -58,11 +51,9 @@ Read the reference files only after the check passes:
 
 ## 打包前置：先拿应用 ID，再谈打包
 
-**没有应用页分配的 ID，就不要跑 build / package。** 这不是“先开发、后补 ID”
-的流程：平台按 manifest 里的 `id` 认应用，脚手架里的
-`00000000-0000-7000-8000-000000000000` 只是占位符，格式上是合法 UUIDv7，
-但不属于任何应用页。用它打出来的包上传必定报 `APP_ID_MISMATCH`，
-等于白打一包。所以打包脚本把这一步做成了硬门禁，而不是只在文档里提醒：
+平台按 manifest 的 `id` 认应用。脚手架里的
+`00000000-0000-7000-8000-000000000000` 是占位符，用它打包上传会报
+`APP_ID_MISMATCH`。打包脚本对此设了硬门禁：
 
 1. 去社区个人资料的应用页创建应用，填好名称、说明和图标。
 2. 从应用页原样复制它分配的 UUIDv7（36 字符，形如 `xxxxxxxx-xxxx-7xxx-[89ab]xxx-xxxxxxxxxxxx`），
@@ -73,7 +64,7 @@ Read the reference files only after the check passes:
      Node 备用路径用 `MINI_APP_ID=<应用ID> node scripts/pack.mjs …`。
 4. 再跑 `validate.mjs`，然后才能跑打包。
 
-门禁规则（助手在执行打包前必须先向用户确认 ID 已拿到，而不是默认替用户跳过）：
+门禁规则（打包前先向用户确认 ID 已拿到）：
 - `pack.mjs`（Node 备用路径）和模板的 `scripts/package.ts`（Bun 路径）：
   最终 `id` 仍是占位符时默认拒绝打包并退出，报错里会写明“先去应用页拿 ID”。
 - `check_zip.mjs`：包内 `id` 是占位符时同样默认拒绝，旧包、绕过打包脚本的包
@@ -403,47 +394,19 @@ records `checkedAt`; when it is older than 14 days the check reports
 
 ## Privacy
 
-This skill ships as a standalone, redistributable directory. It contains no user
-paths, no personal identifiers, and no project-specific data. Upstream documents are
-fetched at check time and cached under `references/upstream/`; that cache is
-regenerable and safe to delete.
-
-The privacy audit is deliberately generic: it blocks absolute paths, real-looking
-email addresses, phone numbers, and key-shaped strings. It scans every text file,
-including LICENSE, shell scripts and the verbatim upstream mirror; only the two
-scripts carrying the detection regex literals are exempt. It does not contain a
-blocklist of any specific person's name or project — writing such a list into
-the skill would itself ship that person's identifiers in every distributed copy.
-If you need to be sure a particular name or project is absent, check locally
-before distributing; do not add it to the skill's audit scripts.
-`evolve.py` only reads files inside this skill directory and the upstream public
-documents, and only writes skill files plus `references/upstream-changelog.md`
-(rule changes and selftest results, never user data).
+No user paths, personal identifiers or project data. `references/upstream/` is a
+regenerable mirror of public docs. The audit covers every text file — LICENSE,
+shell scripts, upstream mirror — and exempts only the two scripts holding the
+detection regex literals. Never add specific names to the audit scripts.
 
 ## Installation
 
-Copy this directory into a skills folder. It works in both scopes:
-
-| Scope | Path | Availability |
-| --- | --- | --- |
-| User | `~/.workbuddy/skills/mapp-developer/` | All projects on this machine |
-| Project | `<project>/.workbuddy/skills/mapp-developer/` | Everyone sharing the repo |
-
-No dependencies to install — `validate.mjs`, `pack.mjs`, and `check_zip.mjs`
-need only Node 18+, and the Python scripts use the standard library alone.
-Bun is optional; it is only needed to build the template project, and the
-template additionally needs the upstream SDK checkout (see Workflow step 4).
+Copy this directory into `~/.workbuddy/skills/mapp-developer/` or
+`<project>/.workbuddy/skills/mapp-developer/`. See README for the agent install
+prompt. Requires Node 18+ and Python 3.8+; Bun 1.2+ is optional.
 
 ## Distribution
 
-`bash scripts/package.sh` runs the generic privacy audit and syntax checks, then writes a
-distributable zip with the top-level `mapp-developer-skill/` directory intact.
-The audit refuses to package if absolute paths, real-looking emails, phone numbers,
-or key-shaped strings are found. It also strips `__pycache__` from the package.
-
-`python3 scripts/selftest.py` verifies the skill itself: directory structure,
-script syntax, validator behaviour on known-good and known-bad manifests, scaffold
-output, the generic privacy audit, and a pack → check_zip → evolve round trip
-(pack must include `manifest.json`, the ZIP must pass `check_zip.mjs`, and
-`evolve.py --check-local` must report no drift on the current snapshot).
-Run it after editing any script or reference file.
+`bash scripts/package.sh` audits and builds the zip (top-level
+`mapp-developer-skill/` intact). `python3 scripts/selftest.py` verifies the skill;
+run it after editing any script or reference file.

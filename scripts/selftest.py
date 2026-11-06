@@ -1,16 +1,7 @@
 #!/usr/bin/env python3
-"""skill 自检 —— 分发后确认这份技能本身是好的。
+"""自检：python3 scripts/selftest.py（0 全过 / 1 有失败项）。
 
-检查项：
-  1. 目录结构完整（SKILL.md、scripts、references、assets）
-  2. Python / Node 脚本语法正确
-  3. validate.mjs 能正确拒绝坏 manifest、接受好 manifest
-  4. scaffold.py 能生成项目
-  5. 脱敏：不含本地路径或个人标识
-
-用法：
-    python3 scripts/selftest.py
-退出码：0 全部通过 / 1 有失败项
+检查目录结构、脚本语法、校验器行为、脚手架产物、脱敏。
 """
 
 from __future__ import annotations
@@ -196,10 +187,8 @@ def check_scaffold():
 
 def check_privacy():
     print("[5/6] 脱敏")
-    # 通用模式，不写任何具体人名、项目名、用户名：把具体名字写进检查脚本，
-    # 反而会把那个名字永远带进分发的 skill 里。真正属于某个人的信息，
-    # 由使用人在本地另外核对，不靠分发包里的黑名单。
-    # 这里只拦“任何人一看就知道是私人信息”的形态，example.* 示例域名除外。
+    # 通用模式：不写具体人名黑名单（写进去等于分发它）。
+    # 只拦绝对路径、邮箱、手机号、密钥形态；example.* 除外。
     import re
     patterns = [
         (re.compile(r"/home/[^/\s]+|/Users/[^/\s]+|C:\\Users\\[^\\\s]+|AppData"), "本地绝对路径"),
@@ -218,9 +207,9 @@ def check_privacy():
                 continue
             pth = os.path.join(root, name)
             rel = os.path.relpath(pth, ROOT).replace("\\", "/")
-            # 上游镜像是公开文档的逐字拷贝，同样纳入扫描，不整目录跳过。
+            # 含检测正则字面量的两个脚本跳过，避免自指误报。
             if rel.endswith("selftest.py") or rel.endswith("scripts/package.sh"):
-                continue          # 这两个文件含有检测用的正则字面量，扫自己必然误报
+                continue
             try:
                 text = open(pth, encoding="utf-8", errors="ignore").read()
             except OSError:

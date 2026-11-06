@@ -1,31 +1,12 @@
 #!/usr/bin/env node
 /**
- * 校验一个已打好的 app.zip 本身，而不是只校验源码目录。
+ * 校验已打好的 app.zip（目录校验通过不代表包通过）。
  *
- * 为什么需要它：validate.mjs 只看目录，pack 脚本的产物可能和目录不一致。
- * 2026-11-03 的真实教训：旧版 pack.mjs 打出的包漏了 manifest.json，
- * 目录校验全过，包本身却缺了平台契约，上传必被拒。从此打包流程是两步：
- *   1. node scripts/validate.mjs <web 目录>
- *   2. node scripts/pack.mjs ... && node scripts/check_zip.mjs dist/package/app.zip
- * 第二步没过，包就不算可上传。
+ *   node check_zip.mjs <app.zip> [--allow-placeholder]
  *
- * 检查项：
- *   - ZIP 能解析，无重复、无目录项、无越界路径、无不支持的压缩方法
- *   - manifest.json 在包内，且是合法 JSON
- *   - 包内文件集合与 manifest 声明完全一致：
- *     manifest.json + index.html + app.js + app.css + strings.json
- *     + assets + 包内 media（远程媒体不进包）
- *     多一个、少一个都算失败
- *   - 单文件、总量、文件数、manifest 大小在限额内
- *   - 解压到临时目录后，再跑一遍 validate.mjs（复用同一套规则）
- *
- * 用法：node check_zip.mjs <app.zip> [--allow-placeholder]
- * 退出码：0 通过 / 1 失败 / 2 用法错误
- * 只用 Node 内置模块，不产生任何持久文件，临时目录用完即删。
- *
- * 应用 ID 门禁：包内 manifest id 仍是脚手架占位符时默认拒绝，
- * 因为用它上传必定 APP_ID_MISMATCH。先去社区应用页拿真实 UUIDv7、
- * 重打一包再验。仅本地脚手架测试可用 --allow-placeholder 显式放行。
+ * 检查 ZIP 结构、manifest 合法性、包内文件集合、限额，并解压重跑
+ * validate.mjs。占位 ID 默认拒绝。只用 Node 内置模块。
+ * 退出码：0 通过 / 1 失败 / 2 用法错误。
  */
 
 import { readFileSync, mkdtempSync, writeFileSync, rmSync, mkdirSync } from "node:fs";

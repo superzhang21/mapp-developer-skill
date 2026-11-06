@@ -1,10 +1,5 @@
-# 打包成可分发的 zip
-#
-# 用法：
-#   bash scripts/package.sh [输出目录]
-#
-# 产物：mapp-developer-skill.zip，结构为 mapp-developer-skill/...
-# 打包前会跑一遍脱敏检查，有残留则拒绝打包。
+# 脱敏审计 + 打包：bash scripts/package.sh [输出目录]
+# 审计不通过则拒绝打包。
 
 set -euo pipefail
 
@@ -16,15 +11,8 @@ ZIP_NAME="mapp-developer-skill.zip"
 cd "$ROOT"
 
 echo "== 脱敏检查 =="
-# 通用模式，不写任何具体人名、项目名、用户名：写具体名字进检查脚本本身，
-# 反而会把那个名字永远带进分发的 skill 里。真正属于某个人的信息，
-# 应该由使用人在本地另外核对一次，而不是靠分发包里的黑名单。
-# 这里只拦“任何人一看就知道是私人信息”的形态：
-#   绝对路径、邮箱、手机号、密钥、私钥头。
-# example.com / example.org 是保留示例域名，不算私人邮箱，单独排除。
-# 扫描覆盖所有文本文件，包括 LICENSE、*.sh 和 references/upstream/ 镜像：
-# 上游是公开文档的逐字拷贝，同样可能被夹带进私人路径，不整目录跳过。
-# 只排除 selftest.py / package.sh —— 它们含检测用的正则字面量，扫自己必然误报。
+# 拦绝对路径、邮箱、手机号、密钥形态；example.* 示例域名除外。
+# 扫全部文本文件，只跳过含检测正则字面量的 selftest.py / package.sh。
 FAIL=0
 SCAN_ARGS="--include=*.md --include=*.py --include=*.mjs --include=*.ts --include=*.json --include=*.yaml --include=*.css --include=*.html --include=*.sh --include=*.txt --include=*.svg --include=LICENSE --exclude=selftest.py --exclude=package.sh"
 

@@ -1,28 +1,12 @@
 #!/usr/bin/env node
 /**
- * 打包 app.zip —— 无 Bun 环境时的替代表（上游 pack.mjs 只依赖 Node 内置模块）。
+ * 无 Bun 环境下打包 app.zip。
  *
- * 用法：
  *   node pack.mjs <manifest.json> <web目录> <输出目录> [--allow-placeholder]
- *   MINI_APP_ID=<应用页UUIDv7> node pack.mjs <manifest.json> <web目录> <输出目录>
+ *   MINI_APP_ID=<UUIDv7> node pack.mjs <manifest.json> <web目录> <输出目录>
  *
- * 例：
- *   node pack.mjs manifest.json dist/web dist/package
- *
- * 应用 ID 门禁（打包前置，见 SKILL.md“先拿应用 ID”）：
- *   打包前必须先去社区应用页创建应用、复制它分配的 UUIDv7，再交给本脚本：
- *   写进 manifest.json 的 id，或用 MINI_APP_ID 环境变量覆盖。
- *   最终 id 仍是脚手架占位符 00000000-0000-7000-8000-000000000000 时，
- *   本脚本默认拒绝打包并退出——用占位包上传必定 APP_ID_MISMATCH，白打一包。
- *   唯一例外是纯本地脚手架测试：显式传 --allow-placeholder，或设
- *   MINI_APP_ALLOW_PLACEHOLDER_ID=1，放行产物仍不能上传。
- *
- * 若项目里有上游 SDK，优先用 SDK 的 pack；本脚本是缺少 SDK 时的替代表，
- * 生成标准 ZIP，文件集合与上游 pack 要求一致：manifest.json 在根目录，
- * 加四个基础文件、声明的 assets 与包内 media（远程媒体不进 ZIP）。
- * 历史 bug（2026-11-03 摸鱼岛实测发现）：旧版 pack.mjs 漏打 manifest.json，
- * 产出的包缺了平台契约本身，上传必被拒。本版已修复，上传前仍须跑
- * scripts/check_zip.mjs 对包本身再验一次，不要只信打包脚本的成功输出。
+ * 占位 ID 默认拒绝；仅本地测试用 --allow-placeholder 或
+ * MINI_APP_ALLOW_PLACEHOLDER_ID=1 放行。产物须再用 check_zip.mjs 验证。
  */
 
 import { readFileSync, existsSync, statSync, mkdirSync, writeFileSync } from "node:fs";

@@ -1,39 +1,13 @@
 #!/usr/bin/env python3
-"""上游规则自动进化 —— 让 skill 跟着 linux-do/mapp-developer-guide 自己长大。
+"""同步上游机器可读规则。
 
-旧流程的问题（2026-11-03 实测）：
-  * sync_upstream.py --apply 只把上游原文镜像下来、写一份“需手动更新”
-    的笔记，参考文档和校验器常量还停在旧规则上；下次有人按旧规则打包，
-    照样在上传时被拒。所谓“自动同步”其实只同步了一半。
-  * 上游一次改动里常常只有措辞/排版变了（例如 sdk-network.md），
-    按文件哈希一律标“已修改”会让人白忙一轮；真正会炸上传的，
-    是限额、权限名、MIME、端点数这几类机器可读的规则。
+    --check-local   只比对，不改文件（0 无漂移 / 2 有漂移）
+    --apply-local   应用漂移、跑自检，失败回滚
+    --evolve        检查 → 拉取 → 应用
 
-本脚本只做机器可读规则的自动进化，别的改动一律留待人工：
-  自动应用（有把握才改，改完跑自检，失败回滚）：
-    - 权限全集：sdk/index.d.ts 里 Permission 类型  vs  validate.mjs PERMISSIONS
-    - 限额：上游 developer-guide / sdk-network 的限额表  vs  validate.mjs LIMITS
-      及 references/manifest.md 的限额表
-    - 远程 MIME 全集：上游远程素材表  vs  validate.mjs REMOTE_MIMES
-  只报告、不自动改（需要语义判断）：
-    - 上游新增的 SDK 方法、错误码、端点鉴权规则、提审规则、 prose 改动
-    - 上游新增/删除了关注文件之外的文件（WATCHED 列表之外的变化）
-
-用法：
-    python3 scripts/evolve.py --check-local   只比对本地上游镜像与校验器，
-                                              不改任何文件；0=无漂移，2=有漂移
-    python3 scripts/evolve.py --apply-local   应用可自动修复的漂移，跑自检，
-                                              失败回滚并写变更日志
-    python3 scripts/evolve.py --evolve        完整链路：先 sync --check，
-                                              有更新则 sync --apply，再 --apply-local；
-                                              网络不通时什么都不改，退出 1
-
-隐私与安全：
-  * 只读本 skill 目录内的文件和上游公开文档，不读、不写、不发送任何
-    用户文件、用户数据、密钥或个人标识。
-  * 备份只存在临时目录，成功后删除；变更日志只记规则变化和自检结果，
-    不记任何用户项目名、路径或身份信息。
-  * 只用标准库。
+自动改权限全集、限额、远程 MIME；措辞、鉴权、提审等语义变化只记入
+references/upstream-changelog.md，交人工处理。只用标准库，只读本 skill
+目录与上游公开文档。
 """
 
 from __future__ import annotations

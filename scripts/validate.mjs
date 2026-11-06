@@ -1,15 +1,9 @@
 #!/usr/bin/env node
 /**
- * manifest.json 离线预检。
+ * manifest.json 离线预检，规则与错误措辞对齐上游 sdk/pack。
  *
- * 复刻上游 @discourse-mini-app/sdk/pack 的校验规则，用同一套错误措辞，
- * 让上传被拒的问题在本地一秒内暴露。上游更新后本脚本可能滞后，
- * 跑 scripts/sync_upstream.py --check 确认规则是否变化。
- *
- * 用法：
- *   node validate.mjs <项目目录>              校验目录里的 manifest.json
- *   node validate.mjs <项目目录> --json       输出 JSON，便于脚本消费
- *   node validate.mjs --manifest path.json    直接校验一个 manifest 文件
+ *   node validate.mjs <项目目录> [--json]
+ *   node validate.mjs --manifest path.json
  *
  * 退出码：0 通过 / 1 有错误 / 2 用法错误
  */

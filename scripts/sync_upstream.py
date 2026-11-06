@@ -1,22 +1,11 @@
 #!/usr/bin/env python3
-"""上游同步 —— 让 skill 跟上 linux-do/mapp-developer-guide 的变化。
+"""检查并镜像 linux-do/mapp-developer-guide 的上游文档。
 
-用法：
-    python3 sync_upstream.py --check     检查上游是否更新（默认动作）
-    python3 sync_upstream.py --apply     拉取上游文档并刷新快照与变更笔记
-    python3 sync_upstream.py --status    只看本地快照状态，不联网
+    --check    比对快照（0 无变化 / 2 有更新 / 1 检查失败 / 3 快照过期）
+    --apply    拉取原文、刷新快照与变更笔记
+    --status   只看本地快照
 
-退出码：
-    0  UP TO DATE    上游无变化
-    2  UPDATE       上游有变化，需要 --apply 后阅读 upstream-notes.md
-    1  CHECK FAILED 检查本身失败（网络/限流），本地快照仍可用
-    3  STALE        距上次检查超过阈值，需要检查（仍属 UP TO DATE 的信息）
-
-设计约束：
-  * 只用标准库，不装任何依赖。
-  * 只访问 api.github.com 与 raw.githubusercontent.com；不可达时降级为
-    "无法判定"，绝不假装上游没更新。
-  * 快照存在 references/upstream-snapshot.json，是可再生的缓存。
+只用标准库。快照是可再生缓存；内容源不可达时报「无法判定」，不当作无更新。
 """
 
 from __future__ import annotations
