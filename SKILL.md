@@ -401,9 +401,9 @@ detection regex literals. Never add specific names to the audit scripts.
 
 ## Installation
 
-Copy this directory into `~/.workbuddy/skills/mapp-developer/` or
-`<project>/.workbuddy/skills/mapp-developer/`. See README for the agent install
-prompt. Requires Node 18+ and Python 3.8+; Bun 1.2+ is optional.
+Copy this directory into your agent's skills folder — user-level or project-level,
+following that agent's own convention. See README for the install prompt.
+Requires Node 18+ and Python 3.8+; Bun 1.2+ is optional.
 
 ## Distribution
 

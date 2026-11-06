@@ -9,13 +9,12 @@ Discourse 微应用开发 skill。规则取自 [linux-do/mapp-developer-guide](h
 ```text
 安装 mapp-developer skill：
 下载 https://github.com/superzhang21/mapp-developer-skill/releases/latest/download/mapp-developer-skill.zip
-解压后把 mapp-developer-skill/ 整个目录放到 ~/.workbuddy/skills/ 下
-（项目级放 <项目>/.workbuddy/skills/）。
+解压后把 mapp-developer-skill/ 整个目录放进你自己的 skills 目录
+（按你所在平台的约定，用户级或项目级均可）。
 然后跑 python3 scripts/selftest.py，全部通过再结束。
 ```
 
-手动装同理：`mapp-developer-skill/` 放进 skills 目录。
-Windows 用户级是 `%USERPROFILE%\.workbuddy\skills\mapp-developer\`。
+手动装同理：放进所用 Agent 的 skills 目录。
 
 ## Agent 使用
 
