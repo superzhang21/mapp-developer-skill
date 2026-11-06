@@ -409,7 +409,9 @@ fetched at check time and cached under `references/upstream/`; that cache is
 regenerable and safe to delete.
 
 The privacy audit is deliberately generic: it blocks absolute paths, real-looking
-email addresses, phone numbers, and key-shaped strings. It does not contain a
+email addresses, phone numbers, and key-shaped strings. It scans every text file,
+including LICENSE, shell scripts and the verbatim upstream mirror; only the two
+scripts carrying the detection regex literals are exempt. It does not contain a
 blocklist of any specific person's name or project — writing such a list into
 the skill would itself ship that person's identifiers in every distributed copy.
 If you need to be sure a particular name or project is absent, check locally
@@ -424,7 +426,6 @@ Copy this directory into a skills folder. It works in both scopes:
 
 | Scope | Path | Availability |
 | --- | --- | --- |
-| Muse (this setup) | `~/workspace/custom-skills/mapp-developer/` | This assistant, all projects |
 | User | `~/.workbuddy/skills/mapp-developer/` | All projects on this machine |
 | Project | `<project>/.workbuddy/skills/mapp-developer/` | Everyone sharing the repo |
 

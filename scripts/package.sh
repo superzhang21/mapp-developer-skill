@@ -22,8 +22,11 @@ echo "== 脱敏检查 =="
 # 这里只拦“任何人一看就知道是私人信息”的形态：
 #   绝对路径、邮箱、手机号、密钥、私钥头。
 # example.com / example.org 是保留示例域名，不算私人邮箱，单独排除。
+# 扫描覆盖所有文本文件，包括 LICENSE、*.sh 和 references/upstream/ 镜像：
+# 上游是公开文档的逐字拷贝，同样可能被夹带进私人路径，不整目录跳过。
+# 只排除 selftest.py / package.sh —— 它们含检测用的正则字面量，扫自己必然误报。
 FAIL=0
-SCAN_ARGS="--include=*.md --include=*.py --include=*.mjs --include=*.ts --include=*.json --include=*.yaml --include=*.css --include=*.html --exclude-dir=upstream --exclude=selftest.py --exclude=package.sh"
+SCAN_ARGS="--include=*.md --include=*.py --include=*.mjs --include=*.ts --include=*.json --include=*.yaml --include=*.css --include=*.html --include=*.sh --include=*.txt --include=*.svg --include=LICENSE --exclude=selftest.py --exclude=package.sh"
 
 # shellcheck disable=SC2086
 if grep -rInE '/home/[^/[:space:]]+|/Users/[^/[:space:]]+|C:\\\\Users\\\\[^\\[:space:]]+|AppData' $SCAN_ARGS . 2>/dev/null | grep -v '<用户名>' | grep -v 'C:\\Users\\<' | grep -v '\[\^' | grep -q .; then

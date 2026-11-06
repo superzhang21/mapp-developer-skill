@@ -10,7 +10,6 @@ Discourse 微应用（社区微程序）开发技能。基于
 
 | 作用域 | 路径 |
 | --- | --- |
-| Muse（本机） | `~/workspace/custom-skills/mapp-developer/` |
 | 用户级（跨项目可用） | `~/.workbuddy/skills/mapp-developer/` |
 | 项目级（团队共享） | `<项目>/.workbuddy/skills/mapp-developer/` |
 
@@ -164,8 +163,9 @@ node scripts/validate.mjs --manifest m.json
 本目录不含任何用户路径、个人标识符或项目数据。`references/upstream/` 是上游公开
 文档的镜像，可以随时删除并在下次 `--apply` 时重建。
 
-脱敏检查是通用模式：拦绝对路径、真实形态的邮箱、手机号、密钥，
-不含任何具体人名或项目名的黑名单——把具体名字写进检查脚本，
+脱敏检查是通用模式：拦绝对路径、真实形态的邮箱、手机号、密钥。
+审计覆盖包内全部文本文件（含 LICENSE、shell 脚本与 upstream 镜像），
+仅排除含检测正则字面量的两个脚本自身。不含任何具体人名或项目名的黑名单——把具体名字写进检查脚本，
 反而会把那个名字永远带进分发的 skill 里。需要核对某个具体名字时，
 请在本地另外核对，不要把它加进 skill。`evolve.py` 只读写本 skill
 目录内的文件和上游公开文档，不读、不发任何用户数据。

@@ -212,15 +212,15 @@ def check_privacy():
     for root, dirs, files in os.walk(ROOT):
         dirs[:] = [d for d in dirs if d not in (".git", "node_modules")]
         for name in files:
-            if not name.endswith((".md", ".py", ".mjs", ".ts", ".json", ".yaml", ".css", ".html", ".sh")):
+            if not (name.endswith((".md", ".py", ".mjs", ".ts", ".json", ".yaml",
+                                   ".css", ".html", ".sh", ".txt", ".svg"))
+                    or name == "LICENSE"):
                 continue
             pth = os.path.join(root, name)
             rel = os.path.relpath(pth, ROOT).replace("\\", "/")
-            if "upstream" in rel:
-                continue          # 上游镜像本身可能含示例路径
+            # 上游镜像是公开文档的逐字拷贝，同样纳入扫描，不整目录跳过。
             if rel.endswith("selftest.py") or rel.endswith("scripts/package.sh"):
-                continue          # 这两个文件含有检测用的正则字面量，不是真实路径；
-                                  # package.sh 自身的打包检查本来就不扫 .sh 文件
+                continue          # 这两个文件含有检测用的正则字面量，扫自己必然误报
             try:
                 text = open(pth, encoding="utf-8", errors="ignore").read()
             except OSError:

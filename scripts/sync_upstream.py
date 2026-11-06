@@ -86,7 +86,7 @@ NOTES = os.path.join(ROOT, "references", "upstream-notes.md")
 # ---------------------------------------------------------------- HTTP
 
 def _opener():
-    """绕过本机 HTTP 代理直连 GitHub —— 代理对 github.com 无效。"""
+    """直连 GitHub，不继承系统代理配置，避免代理影响内容源探测。"""
     return urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
 
